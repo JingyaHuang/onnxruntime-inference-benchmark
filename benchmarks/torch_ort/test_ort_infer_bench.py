@@ -120,6 +120,9 @@ print(
     f"Improvement through ORTInferenceModule(fp32)(compared to onnx): {round(m_vanilla_onnx_model[1]/m_ort_ov_model_fp32[1],2)}x"
 )
 
+# Payload sequence length: 128
+
+# Using default cpu ep as execution provider for the inference of vanilla and optimized onnx model
 # Vanilla PyTorch model: P95 latency (ms) - 23.65705099969091; Average latency (ms) - 23.48 +\- 0.79;
 # Vanilla ONNX model: P95 latency (ms) - 39.39561919983135; Average latency (ms) - 25.02 +\- 3.55;
 # Optimized model: P95 latency (ms) - 12.789480549781729; Average latency (ms) - 12.37 +\- 0.18;
@@ -130,7 +133,7 @@ print(
 # Improvement through ORTInferenceModule(fp32)(compared to onnx): 2.36x
 
 
-# Using "openvino" as execution provider for the inference of vanilla and optimized onnx model
+# Using openvino as execution provider for the inference of vanilla and optimized onnx model
 # Vanilla PyTorch model: P95 latency (ms) - 26.129764549932588; Average latency (ms) - 24.01 +\- 1.40;
 # Vanilla ONNX model: P95 latency (ms) - 24.414487200010626; Average latency (ms) - 24.14 +\- 0.14;
 # Optimized model: P95 latency (ms) - 12.495530199794302; Average latency (ms) - 12.36 +\- 0.33;
