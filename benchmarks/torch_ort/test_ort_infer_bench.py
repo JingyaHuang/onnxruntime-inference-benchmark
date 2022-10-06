@@ -80,14 +80,16 @@ m_vanilla_pytorch_model = measure_latency(model, tokens)
 
 # Case 1: Vanilla ONNX model & speed measurement
 vanilla_onnx_model = ORTModelForSequenceClassification.from_pretrained(
-    onnx_path, file_name="model.onnx"
-)  # , providers="openvino")
+    onnx_path, file_name="model.onnx", providers="OpenVINOExecutionProvider"
+)
 m_vanilla_onnx_model = measure_latency(vanilla_onnx_model, tokens)
 
 # Case 2: Optimized pipe & speed measurement
 optimized_model = ORTModelForSequenceClassification.from_pretrained(
-    onnx_path, file_name="model_optimized_quantized.onnx"
-)  # , providers="openvino")
+    onnx_path,
+    file_name="model_optimized_quantized.onnx",
+    providers="OpenVINOExecutionProvider",
+)
 m_optimized_model = measure_latency(optimized_model, tokens)
 
 # Case 3: ORTInferenceModule
@@ -129,11 +131,11 @@ print(
 
 
 # Using "openvino" as execution provider for the inference of vanilla and optimized onnx model
-# Vanilla PyTorch model: P95 latency (ms) - 23.972567599776085; Average latency (ms) - 23.62 +\- 0.63;
-# Vanilla ONNX model(EP:openvino): P95 latency (ms) - 40.25894789965605; Average latency (ms) - 40.00 +\- 0.53;
-# Optimized model(EP:openvino): P95 latency (ms) - 12.85414059939285; Average latency (ms) - 12.42 +\- 0.41;
-# ORTInference wrapped model(fp32): P95 latency (ms) - 16.758021850819205; Average latency (ms) - 16.60 +\- 0.07;
-# Improvement through quantization(compared to pt): 1.86x
-# Improvement through quantization(compared to onnx): 3.13x
-# Improvement through ORTInferenceModule(fp32)(compared to pt): 1.43x
-# Improvement through ORTInferenceModule(fp32)(compared to onnx): 2.4x
+# Vanilla PyTorch model: P95 latency (ms) - 26.129764549932588; Average latency (ms) - 24.01 +\- 1.40;
+# Vanilla ONNX model: P95 latency (ms) - 24.414487200010626; Average latency (ms) - 24.14 +\- 0.14;
+# Optimized model: P95 latency (ms) - 12.495530199794302; Average latency (ms) - 12.36 +\- 0.33;
+# ORTInference wrapped model(fp32): P95 latency (ms) - 16.855387950818113; Average latency (ms) - 16.64 +\- 0.24;
+# Improvement through quantization(compared to pt): 2.09x
+# Improvement through quantization(compared to onnx): 1.95x
+# Improvement through ORTInferenceModule(fp32)(compared to pt): 1.55x
+# Improvement through ORTInferenceModule(fp32)(compared to onnx): 1.45x
