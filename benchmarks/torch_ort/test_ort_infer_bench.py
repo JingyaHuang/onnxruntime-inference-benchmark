@@ -80,17 +80,21 @@ m_vanilla_pytorch_model = measure_latency(model, tokens)
 
 # Case 1: Vanilla ONNX model & speed measurement
 vanilla_onnx_model = ORTModelForSequenceClassification.from_pretrained(
-    onnx_path, file_name="model.onnx", providers="OpenVINOExecutionProvider"
-)
+    onnx_path, file_name="model.onnx"
+)  # , providers="OpenVINOExecutionProvider")
 m_vanilla_onnx_model = measure_latency(vanilla_onnx_model, tokens)
 
-# Case 2: Optimized pipe & speed measurement
+# Case 1.5: Graph optimized ONNX model & speed measurement
 optimized_model = ORTModelForSequenceClassification.from_pretrained(
-    onnx_path,
-    file_name="model_optimized_quantized.onnx",
-    providers="OpenVINOExecutionProvider",
-)
+    onnx_path, file_name="model_optimized.onnx"
+)  # , providers="OpenVINOExecutionProvider")
 m_optimized_model = measure_latency(optimized_model, tokens)
+
+# Case 2: Optimized-quantized model & speed measurement
+optimized_quantized_model = ORTModelForSequenceClassification.from_pretrained(
+    onnx_path, file_name="model_optimized_quantized.onnx"
+)  # , providers="OpenVINOExecutionProvider")
+m_optimized_quantized_model = measure_latency(optimized_quantized_model, tokens)
 
 # Case 3: ORTInferenceModule
 # 3.1 - CPU + FP32
@@ -105,13 +109,20 @@ m_ort_ov_model_fp32 = measure_latency(model, tokens)
 
 print(f"Vanilla PyTorch model: {m_vanilla_pytorch_model[0]}")
 print(f"Vanilla ONNX model: {m_vanilla_onnx_model[0]}")
-print(f"Optimized model: {m_optimized_model[0]}")
+print(f"Graph optimized model: {m_optimized_model[0]}")
+print(f"Optimized and quantized(d) model: {m_optimized_quantized_model[0]}")
 print(f"ORTInference wrapped model(fp32): {m_ort_ov_model_fp32[0]}")
 print(
-    f"Improvement through quantization(compared to pt): {round(m_vanilla_pytorch_model[1]/m_optimized_model[1],2)}x"
+    f"Improvement through graph optimization(compared to pt): {round(m_vanilla_pytorch_model[1]/m_optimized_model[1],2)}x"
 )
 print(
-    f"Improvement through quantization(compared to onnx): {round(m_vanilla_onnx_model[1]/m_optimized_model[1],2)}x"
+    f"Improvement through graph optimization(compared to onnx): {round(m_vanilla_onnx_model[1]/m_optimized_model[1],2)}x"
+)
+print(
+    f"Improvement through quantization(compared to pt): {round(m_vanilla_pytorch_model[1]/m_optimized_quantized_model[1],2)}x"
+)
+print(
+    f"Improvement through quantization(compared to onnx): {round(m_vanilla_onnx_model[1]/m_optimized_quantized_model[1],2)}x"
 )
 print(
     f"Improvement through ORTInferenceModule(fp32)(compared to pt): {round(m_vanilla_pytorch_model[1]/m_ort_ov_model_fp32[1],2)}x"
@@ -123,22 +134,28 @@ print(
 # Payload sequence length: 128
 
 # Using default cpu ep as execution provider for the inference of vanilla and optimized onnx model
-# Vanilla PyTorch model: P95 latency (ms) - 23.65705099969091; Average latency (ms) - 23.48 +\- 0.79;
-# Vanilla ONNX model: P95 latency (ms) - 39.39561919983135; Average latency (ms) - 25.02 +\- 3.55;
-# Optimized model: P95 latency (ms) - 12.789480549781729; Average latency (ms) - 12.37 +\- 0.18;
-# ORTInference wrapped model(fp32): P95 latency (ms) - 16.678588199465594; Average latency (ms) - 16.58 +\- 0.07;
-# Improvement through quantization(compared to pt): 1.85x
-# Improvement through quantization(compared to onnx): 3.08x
-# Improvement through ORTInferenceModule(fp32)(compared to pt): 1.42x
-# Improvement through ORTInferenceModule(fp32)(compared to onnx): 2.36x
+# Vanilla PyTorch model: P95 latency (ms) - 23.667172900422884; Average latency (ms) - 23.45 +\- 0.56;
+# Vanilla ONNX model: P95 latency (ms) - 40.23343264871073; Average latency (ms) - 31.57 +\- 7.91;
+# Graph optimized model: P95 latency (ms) - 19.930118299089372; Average latency (ms) - 19.67 +\- 0.13;
+# Optimized and quantized(d) model: P95 latency (ms) - 12.24653479821427; Average latency (ms) - 12.17 +\- 0.04;
+# ORTInference wrapped model(fp32): P95 latency (ms) - 16.782321047321602; Average latency (ms) - 16.64 +\- 0.08;
+# Improvement through graph optimization(compared to pt): 1.19x
+# Improvement through graph optimization(compared to onnx): 2.02x
+# Improvement through quantization(compared to pt): 1.93x
+# Improvement through quantization(compared to onnx): 3.29x
+# Improvement through ORTInferenceModule(fp32)(compared to pt): 1.41x
+# Improvement through ORTInferenceModule(fp32)(compared to onnx): 2.4x
 
 
 # Using openvino as execution provider for the inference of vanilla and optimized onnx model
-# Vanilla PyTorch model: P95 latency (ms) - 26.129764549932588; Average latency (ms) - 24.01 +\- 1.40;
-# Vanilla ONNX model: P95 latency (ms) - 24.414487200010626; Average latency (ms) - 24.14 +\- 0.14;
-# Optimized model: P95 latency (ms) - 12.495530199794302; Average latency (ms) - 12.36 +\- 0.33;
-# ORTInference wrapped model(fp32): P95 latency (ms) - 16.855387950818113; Average latency (ms) - 16.64 +\- 0.24;
-# Improvement through quantization(compared to pt): 2.09x
-# Improvement through quantization(compared to onnx): 1.95x
-# Improvement through ORTInferenceModule(fp32)(compared to pt): 1.55x
-# Improvement through ORTInferenceModule(fp32)(compared to onnx): 1.45x
+# Vanilla PyTorch model: P95 latency (ms) - 24.225233897777798; Average latency (ms) - 23.75 +\- 1.11;
+# Vanilla ONNX model: P95 latency (ms) - 40.00455685036286; Average latency (ms) - 24.81 +\- 3.71;
+# Graph optimized model: P95 latency (ms) - 31.335492651305703; Average latency (ms) - 23.13 +\- 5.38;
+# Optimized and quantized(d) model: P95 latency (ms) - 12.284591749994433; Average latency (ms) - 12.21 +\- 0.04;
+# ORTInference wrapped model(fp32): P95 latency (ms) - 16.8439605507956; Average latency (ms) - 16.64 +\- 0.09;
+# Improvement through graph optimization(compared to pt): 0.77x
+# Improvement through graph optimization(compared to onnx): 1.28x
+# Improvement through quantization(compared to pt): 1.97x
+# Improvement through quantization(compared to onnx): 3.26x
+# Improvement through ORTInferenceModule(fp32)(compared to pt): 1.44x
+# Improvement through ORTInferenceModule(fp32)(compared to onnx): 2.38x
