@@ -2,9 +2,12 @@
 
 ### Benchmark
 
+__Torch ORT__
 1. Inference on Intel CPU - Optimum ORTModel(CPUProvider) V.S. ORTInferenceModule(OpenVINOProvider, `backend="CPU"`)
 2. Inference on Intel integrated GPU -  Optimum ORTModel(CudaProvider) V.S ORTInferenceModule(OpenVINOProvider, `backend="GPU"`, `precisions = FP32/FP16`)
 
+__ONNX Runtime__
+1. Inference speed PyTorch vanilla V.S. Optimum ORTModels w/. IOBinding(BART, T5, Whisper / T4, A100)
 
 --------------------------
 __References__
