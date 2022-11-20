@@ -1,0 +1,3 @@
+,seq_len,pt_seq_p95,pt_token_p95,v_onnx_seq_p95,v_onnx_token_p95,io_improvement/pt(token)
+0,3000,94.00227014848495,3.7600908059393987,106.49982340692075,4.25999293627683,"0   -13.29
+dtype: float64%"
