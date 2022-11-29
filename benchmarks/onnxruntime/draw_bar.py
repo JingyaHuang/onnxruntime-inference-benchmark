@@ -11,11 +11,11 @@ beam_dfs = [pd.read_pickle(path) for path in beam_paths]
 greedy_stat = pd.DataFrame({
     "Model":["GPT2", "T5-small", "M2M100(418M)"],
     "ORT": [
-        round(list(df[(df['seq_len']==512) & (df["framework"]=="ONNX")]["time_p95_ms_per_token"])[0], 2)
+        round(list(df[(df['seq_len']==8) & (df["framework"]=="ONNX")]["time_p95_ms_per_token"])[0], 2)
         for df in greedy_dfs
     ],
     "PyTorch": [
-        round(list(df[(df['seq_len']==512) & (df["framework"]=="PyTorch")]["time_p95_ms_per_token"])[0], 2)
+        round(list(df[(df['seq_len']==8) & (df["framework"]=="PyTorch")]["time_p95_ms_per_token"])[0], 2)
         for df in greedy_dfs
     ],
 })
@@ -66,7 +66,7 @@ fig.suptitle("Inference benchmark: PyTorch V.S. ONNX Runtime")
 fig.tight_layout()
 
 plt.annotate(
-    "seq_len:512, Tesla T4",
+    "seq_len:8, Tesla T4",
     (-1.6, -0.13),
     (0, -20),
     xycoords="axes fraction",
@@ -74,4 +74,4 @@ plt.annotate(
     va="top",
 )
 
-plt.savefig("inference_models_512.png", bbox_inches="tight")
+plt.savefig("inference_models_8.png", bbox_inches="tight")
