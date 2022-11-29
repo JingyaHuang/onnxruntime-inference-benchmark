@@ -1,11 +1,12 @@
 import pandas as pd
+import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Load dataframe
-path = 't4_res_ort_t5_s_greedy.pkl'
+path = 't4_res_ort_m2m100_418m_greedy.pkl'
 df_greedy = pd.read_pickle(path)
-path = 't4_res_ort_t5_s_beam5.pkl'
+path = 't4_res_ort_m2m100_418m_beam5.pkl'
 df_beam = pd.read_pickle(path)
 df = pd.concat([df_greedy, df_beam], ignore_index=True)
 df["seq_len_str"] = df['seq_len'].astype(str)
@@ -25,11 +26,12 @@ ax = sns.lineplot(
 )
 sns.move_legend(ax, "upper left", bbox_to_anchor=(1, 1))
 handles, labels = ax.get_legend_handles_labels()
-plt.legend(handles[6:], labels[6:], bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+empty = matplotlib.lines.Line2D([], [], color="none")
+plt.legend(handles[0:3] + [empty] + handles[9:], labels[0:3] + [" "] + labels[9:], bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 plt.title(
-    "T5-small inference: PyTorch V.S. ONNX Runtime"
+    "M2M100-418M inference: PyTorch V.S. ONNX Runtime"
 )
 plt.xlabel("Sequence Length")
 plt.ylabel("Per Token Latency (ms)")
 plt.tight_layout()
-plt.savefig("t4_res_ort_t5_s.png", dpi=900)
+plt.savefig("t4_res_ort_m2m100_418m.png", dpi=900)
